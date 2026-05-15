@@ -4,264 +4,519 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quilo Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0e14;
-            --card: #161b22;
-            --card-hover: #1c2128;
-            --accent: #00f2ff;
-            --text: #e6edf3;
-            --text-dim: #8b949e;
-            --danger: #ff7b72;
-            --success: #39d353;
+            --bg: #07090d;
+            --surface: #0d1219;
+            --surface-2: #121820;
+            --gold: #c9a96e;
+            --gold-dim: #7a6240;
+            --gold-bright: #e8c98a;
+            --text: #ddd5c4;
+            --text-dim: #5a5650;
+            --text-mid: #8a8278;
+            --danger: #c46a6a;
+            --border: #1a2030;
+            --border-bright: #252f40;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            padding: 60px 24px 40px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Subtle radial glow at top */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 400px;
+            background: radial-gradient(ellipse at center, rgba(201, 169, 110, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 580px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            margin-bottom: 52px;
+            animation: fadeDown 0.8s ease both;
+        }
+
+        .eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
 
         h1 {
-            color: var(--accent);
-            margin-bottom: 25px;
-            letter-spacing: 3px;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 300;
-            text-transform: uppercase;
+            font-size: 3.4rem;
+            letter-spacing: 0.12em;
+            color: var(--text);
+            line-height: 1;
+            position: relative;
+            display: inline-block;
         }
 
-        /* Stats Row */
-        .stats-container {
+        h1 span {
+            color: var(--gold);
+        }
+
+        .title-line {
             display: flex;
-            gap: 15px;
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
         }
 
-        .stat-box {
-            background: var(--card);
+        .title-line::before,
+        .title-line::after {
+            content: '';
             flex: 1;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #30363d;
-            transition: transform 0.2s;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border-bright));
         }
 
-        .stat-box:hover {
-            background: var(--card-hover);
-            transform: translateY(-2px);
+        .title-line::after {
+            background: linear-gradient(to left, transparent, var(--border-bright));
         }
 
-        .stat-value {
-            display: block;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--accent);
-            margin-top: 8px;
+        .title-line span {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+        }
+
+        /* ── Stats ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            animation: fadeUp 0.8s 0.1s ease both;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 24px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            background: var(--surface-2);
+            border-color: var(--border-bright);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Corner brackets */
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 8px; right: 8px;
+            width: 10px; height: 10px;
+            border-right: 1px solid var(--border-bright);
+            border-bottom: 1px solid var(--border-bright);
         }
 
         .stat-label {
-            font-size: 0.75rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
         }
 
-        /* Sections */
-        .section {
-            background: var(--card);
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #30363d;
-            box-sizing: border-box;
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: var(--gold-bright);
+            line-height: 1;
+            letter-spacing: 0.02em;
         }
 
-        .section-header {
+        .stat-value .unit {
+            font-size: 1.1rem;
+            color: var(--gold-dim);
+            margin-left: 2px;
+        }
+
+        /* ── Section Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card:nth-of-type(1) { animation: fadeUp 0.8s 0.2s ease both; }
+        .card:nth-of-type(2) { animation: fadeUp 0.8s 0.3s ease both; }
+
+        .card-top-bar {
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold-dim) 0%, transparent 60%);
+        }
+
+        .card-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            padding: 18px 24px 16px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .section-title {
-            font-size: 1rem;
-            color: var(--accent);
-            font-weight: bold;
+        .card-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.22em;
+            color: var(--gold);
             text-transform: uppercase;
         }
 
-        /* AI Summary */
-        #ai-summary {
-            line-height: 1.6;
-            font-style: italic;
-            color: #c9d1d9;
-            margin: 0;
+        .card-body {
+            padding: 22px 24px;
         }
 
-        /* AI Button */
+        /* ── Refresh Button ── */
         #ai-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
             background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
+            border: 1px solid var(--border-bright);
+            border-radius: 2px;
             padding: 6px 12px;
-            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
 
-        #ai-btn:hover {
-            background: var(--accent);
-            color: var(--bg);
+        #ai-btn:hover:not(:disabled) {
+            border-color: var(--gold-dim);
+            color: var(--gold);
         }
 
         #ai-btn:disabled {
-            border-color: var(--text-dim);
-            color: var(--text-dim);
+            opacity: 0.35;
             cursor: not-allowed;
         }
 
-        /* Exam List */
-        .exam-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 5px;
-            border-bottom: 1px solid #21262d;
+        /* ── AI Summary ── */
+        #ai-summary-wrapper {
+            position: relative;
+            padding-left: 18px;
         }
 
-        .exam-item:last-child {
-            border-bottom: none;
+        #ai-summary-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 4px; bottom: 4px;
+            width: 1px;
+            background: linear-gradient(to bottom, var(--gold-dim), transparent);
+        }
+
+        #ai-summary {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            line-height: 1.75;
+            color: var(--text-mid);
+            font-weight: 300;
+        }
+
+        /* ── Exam List ── */
+        .exam-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .exam-item:last-child { border-bottom: none; }
+
+        .exam-item:hover .exam-name { color: var(--text); }
+
+        .exam-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .exam-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--danger);
+            flex-shrink: 0;
+            box-shadow: 0 0 6px var(--danger);
         }
 
         .exam-name {
-            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            font-size: 0.92rem;
+            color: var(--text-mid);
+            letter-spacing: 0.01em;
+            transition: color 0.2s;
         }
 
         .exam-date {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
             color: var(--danger);
-            font-weight: bold;
-            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            opacity: 0.85;
         }
 
-        .footer {
-            margin-top: auto;
+        .no-exams {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1rem;
             color: var(--text-dim);
-            font-size: 0.7rem;
-            padding: 20px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* ── Footer ── */
+        footer {
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeUp 0.8s 0.4s ease both;
+        }
+
+        .sync-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--gold-dim);
+            animation: pulse 2.8s ease-in-out infinite;
+        }
+
+        .sync-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: var(--text-dim);
+        }
+
+        #last-sync { color: var(--gold-dim); }
+
+        /* ── Animations ── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50%       { opacity: 1;   transform: scale(1.4); }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            body { padding: 40px 16px 32px; }
+            h1 { font-size: 2.6rem; }
+            .stat-value { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <h1>Quilo Monitor</h1>
+<div class="wrapper">
 
-    <div class="stats-container">
-        <div class="stat-box">
+    <header>
+        <p class="eyebrow">Study Intelligence</p>
+        <h1>Quilo <span>Monitor</span></h1>
+        <div class="title-line"><span>&#9670;</span></div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
             <span class="stat-label">Today's Study</span>
-            <span id="today-time" class="stat-value">--h --m</span>
+            <div class="stat-value" id="today-time">—</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-card">
             <span class="stat-label">Weekly Total</span>
-            <span id="weekly-time" class="stat-value">--h --m</span>
+            <div class="stat-value" id="weekly-time">—</div>
         </div>
     </div>
 
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">AI Performance Summary</span>
-            <button id="ai-btn" onclick="requestAISummary()">Refresh AI Summary</button>
+    <div class="card">
+        <div class="card-top-bar"></div>
+        <div class="card-header">
+            <span class="card-title">AI Performance Summary</span>
+            <button id="ai-btn" onclick="requestAISummary()">↻ Refresh</button>
         </div>
-        <p id="ai-summary">Waiting for laptop update...</p>
-    </div>
-
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">Upcoming Exams</span>
-        </div>
-        <div id="exam-list">
+        <div class="card-body">
+            <div id="ai-summary-wrapper">
+                <p id="ai-summary">Awaiting transmission from your laptop…</p>
             </div>
+        </div>
     </div>
 
-    <div class="footer">
-        Last synced: <span id="last-sync">--:--</span>
+    <div class="card">
+        <div class="card-top-bar"></div>
+        <div class="card-header">
+            <span class="card-title">Upcoming Exams</span>
+        </div>
+        <div class="card-body" style="padding-top: 6px; padding-bottom: 6px;">
+            <div id="exam-list"></div>
+        </div>
     </div>
 
-    <script>
-        // REPLACE WITH YOUR ACTUAL FIREBASE BASE URL
-        const BASE_URL = "https://quilo-monitor-default-rtdb.firebaseio.com/monitor";
+    <footer>
+        <div class="sync-dot"></div>
+        <span class="sync-text">Last synced &nbsp;·&nbsp; <span id="last-sync">--:--</span></span>
+    </footer>
 
-        async function updateDashboard() {
-            try {
-                const response = await fetch(`${BASE_URL}.json`);
-                const data = await response.json();
-                if (!data) return;
+</div>
 
-                document.getElementById('today-time').innerText = data.today_time || "0h 0m";
-                document.getElementById('weekly-time').innerText = data.weekly_time || "0h 0m";
-                document.getElementById('ai-summary').innerText = data.ai_summary || "No summary available.";
-                document.getElementById('last-sync').innerText = data.last_update || "--:--";
+<script>
+    const BASE_URL = "https://quilo-monitor-default-rtdb.firebaseio.com/monitor";
 
-                const examList = document.getElementById('exam-list');
-                examList.innerHTML = ''; 
-                
-                if (data.exams && data.exams.length > 0) {
-                    data.exams.forEach(exam => {
-                        const item = document.createElement('div');
-                        item.className = 'exam-item';
-                        item.innerHTML = `<span class="exam-name">${exam.subject}</span><span class="exam-date">${exam.date}</span>`;
-                        examList.appendChild(item);
-                    });
-                } else {
-                    examList.innerHTML = '<p style="color: var(--text-dim); font-size: 0.9rem; text-align: center;">No exams listed.</p>';
-                }
-            } catch (e) {
-                console.error("Dashboard update failed", e);
-            }
-        }
+    function parseTime(str) {
+        if (!str || str === "0h 0m") return { h: "0", m: "0m" };
+        const match = str.match(/(\d+)h\s*(\d+)m/);
+        if (match) return { h: match[1], m: match[2] + "m" };
+        return { h: str, m: "" };
+    }
 
-        async function requestAISummary() {
-            const btn = document.getElementById('ai-btn');
-            const originalText = btn.innerText;
-            
-            btn.innerText = "Requesting...";
-            btn.disabled = true;
+    function setStatValue(id, str) {
+        const el = document.getElementById(id);
+        if (!str || str === "0h 0m") { el.textContent = "—"; return; }
+        const { h, m } = parseTime(str);
+        el.innerHTML = `${h}<span class="unit">h ${m}</span>`;
+    }
 
-            try {
-                // Set the signal in Firebase for Sentinel to see
-                await fetch(`${BASE_URL}/ai_signal.json`, {
-                    method: "PUT",
-                    body: JSON.stringify({ request_pending: true, timestamp: Date.now() })
+    async function updateDashboard() {
+        try {
+            const res = await fetch(`${BASE_URL}.json`);
+            const data = await res.json();
+            if (!data) return;
+
+            setStatValue('today-time', data.today_time);
+            setStatValue('weekly-time', data.weekly_time);
+
+            document.getElementById('ai-summary').textContent =
+                data.ai_summary || "No summary available yet.";
+            document.getElementById('last-sync').textContent =
+                data.last_update || "--:--";
+
+            const list = document.getElementById('exam-list');
+            list.innerHTML = '';
+            if (data.exams && data.exams.length > 0) {
+                data.exams.forEach(exam => {
+                    const item = document.createElement('div');
+                    item.className = 'exam-item';
+                    item.innerHTML = `
+                        <div class="exam-left">
+                            <div class="exam-dot"></div>
+                            <span class="exam-name">${exam.subject}</span>
+                        </div>
+                        <span class="exam-date">${exam.date}</span>`;
+                    list.appendChild(item);
                 });
-                
-                alert("Request sent! The AI summary will update shortly once your laptop processes it.");
-            } catch (e) {
-                alert("Failed to send request. Check your internet connection.");
-                console.error(e);
+            } else {
+                list.innerHTML = '<p class="no-exams">No exams on record.</p>';
             }
-
-            // Re-enable after cooldown
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }, 10000);
+        } catch (e) {
+            console.error("Dashboard update failed", e);
         }
+    }
 
-        // Auto-refresh the dashboard every 60 seconds
-        setInterval(updateDashboard, 60000);
-        updateDashboard();
-    </script>
+    async function requestAISummary() {
+        const btn = document.getElementById('ai-btn');
+        btn.textContent = "Sending…";
+        btn.disabled = true;
+        try {
+            await fetch(`${BASE_URL}/ai_signal.json`, {
+                method: "PUT",
+                body: JSON.stringify({ request_pending: true, timestamp: Date.now() })
+            });
+            alert("Request sent! The AI summary will update shortly once your laptop processes it.");
+        } catch (e) {
+            alert("Failed to send request. Check your internet connection.");
+        }
+        setTimeout(() => {
+            btn.textContent = "↻ Refresh";
+            btn.disabled = false;
+        }, 10000);
+    }
+
+    setInterval(updateDashboard, 60000);
+    updateDashboard();
+</script>
 </body>
 </html>
