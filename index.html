@@ -5,82 +5,262 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quilo Monitor</title>
     <style>
-        :root { --bg: #0f111a; --card: #161b22; --accent: #00f2ff; --text: #e6edf3; --text-dim: #8b949e; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: var(--accent); margin-bottom: 30px; letter-spacing: 2px; }
-        
-        /* Stats Row */
-        .stats-container { display: flex; gap: 20px; width: 100%; max-width: 600px; margin-bottom: 20px; }
-        .stat-box { background: var(--card); flex: 1; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #30363d; }
-        .stat-value { display: block; font-size: 2rem; font-weight: bold; color: var(--accent); margin-top: 10px; }
-        .stat-label { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; }
+        :root {
+            --bg: #0b0e14;
+            --card: #161b22;
+            --card-hover: #1c2128;
+            --accent: #00f2ff;
+            --text: #e6edf3;
+            --text-dim: #8b949e;
+            --danger: #ff7b72;
+            --success: #39d353;
+        }
 
-        /* Content Sections */
-        .section { background: var(--card); width: 100%; max-width: 600px; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #30363d; box-sizing: border-box; }
-        .section-title { font-size: 1.1rem; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 15px; color: var(--accent); }
-        #ai-summary { line-height: 1.6; font-style: italic; color: #c9d1d9; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--accent);
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        /* Stats Row */
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card);
+            flex: 1;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #30363d;
+            transition: transform 0.2s;
+        }
+
+        .stat-box:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-top: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--card);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #30363d;
+            box-sizing: border-box;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* AI Summary */
+        #ai-summary {
+            line-height: 1.6;
+            font-style: italic;
+            color: #c9d1d9;
+            margin: 0;
+        }
+
+        /* AI Button */
+        #ai-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+        }
+
+        #ai-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        #ai-btn:disabled {
+            border-color: var(--text-dim);
+            color: var(--text-dim);
+            cursor: not-allowed;
+        }
 
         /* Exam List */
-        .exam-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #21262d; }
-        .exam-item:last-child { border-bottom: none; }
-        .exam-date { color: #ff7b72; font-weight: bold; }
+        .exam-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 5px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .exam-item:last-child {
+            border-bottom: none;
+        }
+
+        .exam-name {
+            font-weight: 500;
+        }
+
+        .exam-date {
+            color: var(--danger);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: auto;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>QUILO MONITOR</h1>
+    <h1>Quilo Monitor</h1>
 
     <div class="stats-container">
         <div class="stat-box">
             <span class="stat-label">Today's Study</span>
-            <span id="today-time" class="stat-value">0h 0m</span>
+            <span id="today-time" class="stat-value">--h --m</span>
         </div>
         <div class="stat-box">
             <span class="stat-label">Weekly Total</span>
-            <span id="weekly-time" class="stat-value">0h 0m</span>
+            <span id="weekly-time" class="stat-value">--h --m</span>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">AI Performance Summary</div>
-        <p id="ai-summary">Waiting for update from tablet...</p>
+        <div class="section-header">
+            <span class="section-title">AI Performance Summary</span>
+            <button id="ai-btn" onclick="requestAISummary()">Refresh AI Summary</button>
+        </div>
+        <p id="ai-summary">Waiting for laptop update...</p>
     </div>
 
     <div class="section">
-        <div class="section-title">Upcoming Exams</div>
+        <div class="section-header">
+            <span class="section-title">Upcoming Exams</span>
+        </div>
         <div id="exam-list">
             </div>
     </div>
 
+    <div class="footer">
+        Last synced: <span id="last-sync">--:--</span>
+    </div>
+
     <script>
-        // REPLACE THIS with your actual Firebase URL
-        const DB_URL = "https://your-project-id.firebaseio.com/monitor.json";
+        // REPLACE WITH YOUR ACTUAL FIREBASE BASE URL
+        const BASE_URL = "https://quilo-monitor-default-rtdb.firebaseio.com/monitor";
 
         async function updateDashboard() {
             try {
-                const response = await fetch(DB_URL);
+                const response = await fetch(`${BASE_URL}.json`);
                 const data = await response.json();
                 if (!data) return;
 
                 document.getElementById('today-time').innerText = data.today_time || "0h 0m";
                 document.getElementById('weekly-time').innerText = data.weekly_time || "0h 0m";
                 document.getElementById('ai-summary').innerText = data.ai_summary || "No summary available.";
+                document.getElementById('last-sync').innerText = data.last_update || "--:--";
 
                 const examList = document.getElementById('exam-list');
                 examList.innerHTML = ''; 
                 
-                if (data.exams) {
+                if (data.exams && data.exams.length > 0) {
                     data.exams.forEach(exam => {
                         const item = document.createElement('div');
                         item.className = 'exam-item';
-                        item.innerHTML = `<span>${exam.subject}</span><span class="exam-date">${exam.date}</span>`;
+                        item.innerHTML = `<span class="exam-name">${exam.subject}</span><span class="exam-date">${exam.date}</span>`;
                         examList.appendChild(item);
                     });
+                } else {
+                    examList.innerHTML = '<p style="color: var(--text-dim); font-size: 0.9rem; text-align: center;">No exams listed.</p>';
                 }
-            } catch (e) { console.error("Update failed", e); }
+            } catch (e) {
+                console.error("Dashboard update failed", e);
+            }
         }
 
-        setInterval(updateDashboard, 60000); // Update every minute
+        async function requestAISummary() {
+            const btn = document.getElementById('ai-btn');
+            const originalText = btn.innerText;
+            
+            btn.innerText = "Requesting...";
+            btn.disabled = true;
+
+            try {
+                // Set the signal in Firebase for Sentinel to see
+                await fetch(`${BASE_URL}/ai_signal.json`, {
+                    method: "PUT",
+                    body: JSON.stringify({ request_pending: true, timestamp: Date.now() })
+                });
+                
+                alert("Request sent! The AI summary will update shortly once your laptop processes it.");
+            } catch (e) {
+                alert("Failed to send request. Check your internet connection.");
+                console.error(e);
+            }
+
+            // Re-enable after cooldown
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 10000);
+        }
+
+        // Auto-refresh the dashboard every 60 seconds
+        setInterval(updateDashboard, 60000);
         updateDashboard();
     </script>
 </body>
