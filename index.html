@@ -22,6 +22,15 @@
             --border-bright: #252f40;
         }
 
+        .exam-countdown {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: 8px;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -460,6 +469,25 @@
         el.innerHTML = `${h}<span class="unit">h ${m}</span>`;
     }
 
+    // Helper to calculate days remaining
+    function getCountdown(dateStr) {
+        if (!dateStr) return "";
+        const examDate = new Date(dateStr);
+        const today = new Date();
+        
+        // Reset times to midnight for accurate day calculation
+        examDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        
+        const diffTime = examDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Tomorrow";
+        if (diffDays < 0) return "Past";
+        return `in ${diffDays} days`;
+    }
+
     async function updateDashboard() {
         try {
             const res = await fetch(`${BASE_URL}.json`);
@@ -478,12 +506,16 @@
             list.innerHTML = '';
             if (data.exams && data.exams.length > 0) {
                 data.exams.forEach(exam => {
+                    const countdownText = getCountdown(exam.date);
                     const item = document.createElement('div');
                     item.className = 'exam-item';
                     item.innerHTML = `
                         <div class="exam-left">
                             <div class="exam-dot"></div>
-                            <span class="exam-name">${exam.subject}</span>
+                            <span class="exam-name">
+                                ${exam.subject}
+                                <span class="exam-countdown">${countdownText}</span>
+                            </span>
                         </div>
                         <span class="exam-date">${exam.date}</span>`;
                     list.appendChild(item);
