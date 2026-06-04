@@ -20,6 +20,7 @@
             --danger: #c46a6a;
             --border: #1a2030;
             --border-bright: #252f40;
+            --success: #6ac48a;
         }
 
         .exam-countdown {
@@ -51,8 +52,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 0;
         }
@@ -174,7 +174,6 @@
             opacity: 1;
         }
 
-        /* Corner brackets */
         .stat-card::after {
             content: '';
             position: absolute;
@@ -209,6 +208,123 @@
             margin-left: 2px;
         }
 
+        /* ── Command / Controls Area ── */
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            animation: fadeUp 0.8s 0.15s ease both;
+        }
+
+        .admin-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-mid);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .admin-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold-bright);
+            background: var(--surface-2);
+        }
+
+        .admin-btn.active {
+            border-color: var(--gold);
+            color: var(--gold-bright);
+            background: var(--surface-2);
+            box-shadow: 0 0 8px rgba(201, 169, 110, 0.1);
+        }
+
+        /* Dynamic Forms Styling */
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group:last-of-type {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-mid);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border-bright);
+            border-radius: 2px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold-dim);
+        }
+
+        .btn-submit-panel {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--bg);
+            background: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 2px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        .btn-submit-panel:hover {
+            background: var(--gold-bright);
+            border-color: var(--gold-bright);
+        }
+
+        .btn-clear-panel {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--danger);
+            background: transparent;
+            border: 1px solid rgba(196, 106, 106, 0.3);
+            border-radius: 2px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-clear-panel:hover {
+            background: rgba(196, 106, 106, 0.1);
+            border-color: var(--danger);
+        }
+
         /* ── Section Cards ── */
         .card {
             background: var(--surface);
@@ -218,9 +334,6 @@
             overflow: hidden;
             position: relative;
         }
-
-        .card:nth-of-type(1) { animation: fadeUp 0.8s 0.2s ease both; }
-        .card:nth-of-type(2) { animation: fadeUp 0.8s 0.3s ease both; }
 
         .card-top-bar {
             height: 1px;
@@ -248,12 +361,12 @@
         }
 
         /* ── Refresh Button ── */
-        #ai-btn {
+        #ai-btn, .close-panel-btn {
             font-family: 'DM Mono', monospace;
             font-size: 0.6rem;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: var(--gold-dim);
+            color: var(--text-dim);
             background: transparent;
             border: 1px solid var(--border-bright);
             border-radius: 2px;
@@ -262,7 +375,7 @@
             transition: all 0.25s;
         }
 
-        #ai-btn:hover:not(:disabled) {
+        #ai-btn:hover:not(:disabled), .close-panel-btn:hover {
             border-color: var(--gold-dim);
             color: var(--gold);
         }
@@ -307,7 +420,6 @@
         }
 
         .exam-item:last-child { border-bottom: none; }
-
         .exam-item:hover .exam-name { color: var(--text); }
 
         .exam-left {
@@ -376,7 +488,7 @@
         }
 
         #last-sync { color: var(--gold-dim); }
-
+        
         /* ── Animations ── */
         @keyframes fadeDown {
             from { opacity: 0; transform: translateY(-14px); }
@@ -398,6 +510,7 @@
             body { padding: 40px 16px 32px; }
             h1 { font-size: 2.6rem; }
             .stat-value { font-size: 2.2rem; }
+            .action-row { grid-template-columns: 1fr; gap: 8px; }
         }
     </style>
 </head>
@@ -422,7 +535,23 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="action-row">
+        <button id="btn-toggle-override" class="admin-btn" onclick="openAdminPanel('override')">
+            🛡️ Parental Override
+        </button>
+    </div>
+
+    <div id="admin-panel-card" class="card" style="display: none; animation: fadeUp 0.4s ease both;">
+        <div class="card-top-bar" style="background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);"></div>
+        <div class="card-header">
+            <span id="admin-panel-title" class="card-title">Configuration Interface</span>
+            <button class="close-panel-btn" onclick="closeAdminPanel()">✕ Close</button>
+        </div>
+        <div id="admin-panel-body" class="card-body">
+            </div>
+    </div>
+
+    <div class="card" style="animation: fadeUp 0.8s 0.2s ease both;">
         <div class="card-top-bar"></div>
         <div class="card-header">
             <span class="card-title">AI Performance Summary</span>
@@ -435,7 +564,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="animation: fadeUp 0.8s 0.3s ease both;">
         <div class="card-top-bar"></div>
         <div class="card-header">
             <span class="card-title">Upcoming Exams</span>
@@ -454,6 +583,7 @@
 
 <script>
     const BASE_URL = "https://quilo-monitor-default-rtdb.firebaseio.com/monitor";
+    let activePanelType = null;
 
     function parseTime(str) {
         if (!str || str === "0h 0m") return { h: "0", m: "0m" };
@@ -469,13 +599,11 @@
         el.innerHTML = `${h}<span class="unit">h ${m}</span>`;
     }
 
-    // Helper to calculate days remaining
     function getCountdown(dateStr) {
         if (!dateStr) return "";
         const examDate = new Date(dateStr);
         const today = new Date();
         
-        // Reset times to midnight for accurate day calculation
         examDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
         
@@ -545,6 +673,90 @@
             btn.textContent = "↻ Refresh";
             btn.disabled = false;
         }, 10000);
+    }
+
+    /* ── Dynamic Controls Architecture (Sentinel Hook Integrations) ── */
+    function openAdminPanel(type) {
+        const panelCard = document.getElementById('admin-panel-card');
+        const panelTitle = document.getElementById('admin-panel-title');
+        const panelBody = document.getElementById('admin-panel-body');
+        
+        // Reset active state styles
+        document.getElementById('btn-toggle-override').classList.remove('active');
+
+        if (activePanelType === type) {
+            // Clicking the already active open button closes it cleanly
+            closeAdminPanel();
+            return;
+        }
+
+        activePanelType = type;
+        panelCard.style.display = 'block';
+
+        if (type === 'override') {
+            document.getElementById('btn-toggle-override').classList.add('active');
+            panelTitle.textContent = "🛡️ Parental Security Override Setup";
+            panelBody.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Sentinel Bypass Password</label>
+                    <input type="password" id="override-pass" class="form-input" placeholder="••••••••" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bypass Duration (Minutes)</label>
+                    <input type="number" id="override-duration" class="form-input" value="60" min="1" max="1440" required />
+                </div>
+                <button class="btn-submit-panel" onclick="submitParentalOverride()">Authorize & Transmit Bypass</button>
+                <button class="btn-clear-panel" onclick="clearFirebaseNode('remote_override')">Clear / Rescind Current Override</button>
+            `;
+        }
+    }
+
+    function closeAdminPanel() {
+        document.getElementById('admin-panel-card').style.display = 'none';
+        document.getElementById('btn-toggle-override').classList.remove('active');
+        activePanelType = null;
+    }
+
+    async function submitParentalOverride() {
+        const password = document.getElementById('override-pass').value;
+        const duration = parseInt(document.getElementById('override-duration').value, 10);
+
+        if (!password) {
+            alert("Authorization failure: A validation password is required.");
+            return;
+        }
+
+        try {
+            // Connects directly to sentinel's defined path (FIREBASE_OVERRIDE_URL)
+            await fetch(`${BASE_URL}/remote_override.json`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    password: password,
+                    duration_minutes: duration,
+                    timestamp: Date.now(),
+                    active: true
+                })
+            });
+            alert(`Parental override authorization transmitted successfully! Window active for next ${duration} minutes.`);
+            closeAdminPanel();
+        } catch (e) {
+            alert("Network error: Synchronization failure targeting database interface node.");
+        }
+    }
+
+    async function clearFirebaseNode(nodeName) {
+        if (!confirm(`Are you sure you want to clear the active ${nodeName.replace('_', ' ')} state?`)) return;
+        try {
+            await fetch(`${BASE_URL}/${nodeName}.json`, {
+                method: "PUT",
+                body: JSON.stringify({ active: false, terminated_at: Date.now() })
+            });
+            alert(`The status configuration node [${nodeName}] was purged cleanly.`);
+            closeAdminPanel();
+        } catch (e) {
+            alert("Network error: Configuration cancellation operation aborted.");
+        }
     }
 
     setInterval(updateDashboard, 60000);
