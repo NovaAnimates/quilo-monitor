@@ -208,123 +208,6 @@
             margin-left: 2px;
         }
 
-        /* ── Command / Controls Area ── */
-        .action-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-            animation: fadeUp 0.8s 0.15s ease both;
-        }
-
-        .admin-btn {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--text-mid);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.25s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .admin-btn:hover {
-            border-color: var(--gold-dim);
-            color: var(--gold-bright);
-            background: var(--surface-2);
-        }
-
-        .admin-btn.active {
-            border-color: var(--gold);
-            color: var(--gold-bright);
-            background: var(--surface-2);
-            box-shadow: 0 0 8px rgba(201, 169, 110, 0.1);
-        }
-
-        /* Dynamic Forms Styling */
-        .form-group {
-            margin-bottom: 14px;
-        }
-        .form-group:last-of-type {
-            margin-bottom: 18px;
-        }
-
-        .form-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-mid);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .form-input {
-            width: 100%;
-            background: var(--bg);
-            border: 1px solid var(--border-bright);
-            border-radius: 2px;
-            padding: 10px 12px;
-            color: var(--text);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--gold-dim);
-        }
-
-        .btn-submit-panel {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--bg);
-            background: var(--gold);
-            border: 1px solid var(--gold);
-            border-radius: 2px;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            font-weight: 500;
-        }
-
-        .btn-submit-panel:hover {
-            background: var(--gold-bright);
-            border-color: var(--gold-bright);
-        }
-
-        .btn-clear-panel {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--danger);
-            background: transparent;
-            border: 1px solid rgba(196, 106, 106, 0.3);
-            border-radius: 2px;
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .btn-clear-panel:hover {
-            background: rgba(196, 106, 106, 0.1);
-            border-color: var(--danger);
-        }
-
         /* ── Section Cards ── */
         .card {
             background: var(--surface);
@@ -535,21 +418,8 @@
         </div>
     </div>
 
-    <div class="action-row">
-        <button id="btn-toggle-override" class="admin-btn" onclick="openAdminPanel('override')">
-            🛡️ Parental Override
-        </button>
-    </div>
 
-    <div id="admin-panel-card" class="card" style="display: none; animation: fadeUp 0.4s ease both;">
-        <div class="card-top-bar" style="background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);"></div>
-        <div class="card-header">
-            <span id="admin-panel-title" class="card-title">Configuration Interface</span>
-            <button class="close-panel-btn" onclick="closeAdminPanel()">✕ Close</button>
-        </div>
-        <div id="admin-panel-body" class="card-body">
-            </div>
-    </div>
+    
 
     <div class="card" style="animation: fadeUp 0.8s 0.2s ease both;">
         <div class="card-top-bar"></div>
@@ -583,7 +453,7 @@
 
 <script>
     const BASE_URL = "https://quilo-monitor-default-rtdb.firebaseio.com/monitor";
-    let activePanelType = null;
+    
 
     function parseTime(str) {
         if (!str || str === "0h 0m") return { h: "0", m: "0m" };
@@ -673,90 +543,6 @@
             btn.textContent = "↻ Refresh";
             btn.disabled = false;
         }, 10000);
-    }
-
-    /* ── Dynamic Controls Architecture (Sentinel Hook Integrations) ── */
-    function openAdminPanel(type) {
-        const panelCard = document.getElementById('admin-panel-card');
-        const panelTitle = document.getElementById('admin-panel-title');
-        const panelBody = document.getElementById('admin-panel-body');
-        
-        // Reset active state styles
-        document.getElementById('btn-toggle-override').classList.remove('active');
-
-        if (activePanelType === type) {
-            // Clicking the already active open button closes it cleanly
-            closeAdminPanel();
-            return;
-        }
-
-        activePanelType = type;
-        panelCard.style.display = 'block';
-
-        if (type === 'override') {
-            document.getElementById('btn-toggle-override').classList.add('active');
-            panelTitle.textContent = "🛡️ Parental Security Override Setup";
-            panelBody.innerHTML = `
-                <div class="form-group">
-                    <label class="form-label">Sentinel Bypass Password</label>
-                    <input type="password" id="override-pass" class="form-input" placeholder="••••••••" required />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Bypass Duration (Minutes)</label>
-                    <input type="number" id="override-duration" class="form-input" value="60" min="1" max="1440" required />
-                </div>
-                <button class="btn-submit-panel" onclick="submitParentalOverride()">Authorize & Transmit Bypass</button>
-                <button class="btn-clear-panel" onclick="clearFirebaseNode('remote_override')">Clear / Rescind Current Override</button>
-            `;
-        }
-    }
-
-    function closeAdminPanel() {
-        document.getElementById('admin-panel-card').style.display = 'none';
-        document.getElementById('btn-toggle-override').classList.remove('active');
-        activePanelType = null;
-    }
-
-    async function submitParentalOverride() {
-        const password = document.getElementById('override-pass').value;
-        const duration = parseInt(document.getElementById('override-duration').value, 10);
-
-        if (!password) {
-            alert("Authorization failure: A validation password is required.");
-            return;
-        }
-
-        try {
-            // Connects directly to sentinel's defined path (FIREBASE_OVERRIDE_URL)
-            await fetch(`${BASE_URL}/remote_override.json`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    password: password,
-                    duration_minutes: duration,
-                    timestamp: Date.now(),
-                    active: true
-                })
-            });
-            alert(`Parental override authorization transmitted successfully! Window active for next ${duration} minutes.`);
-            closeAdminPanel();
-        } catch (e) {
-            alert("Network error: Synchronization failure targeting database interface node.");
-        }
-    }
-
-    async function clearFirebaseNode(nodeName) {
-        if (!confirm(`Are you sure you want to clear the active ${nodeName.replace('_', ' ')} state?`)) return;
-        try {
-            await fetch(`${BASE_URL}/${nodeName}.json`, {
-                method: "PUT",
-                body: JSON.stringify({ active: false, terminated_at: Date.now() })
-            });
-            alert(`The status configuration node [${nodeName}] was purged cleanly.`);
-            closeAdminPanel();
-        } catch (e) {
-            alert("Network error: Configuration cancellation operation aborted.");
-        }
     }
 
     setInterval(updateDashboard, 60000);
