@@ -497,8 +497,26 @@
 
             document.getElementById('ai-summary').textContent =
                 data.ai_summary || "No summary available yet.";
-            document.getElementById('last-sync').textContent =
-                data.last_update || "--:--";
+
+            // --- UPDATED SYNC LOGIC ---
+            let syncDisplay = data.last_update || "--:--";
+            if (data.last_update) {
+                const syncDate = new Date(data.last_update);
+                if (!isNaN(syncDate)) {
+                    const diffDays = (new Date() - syncDate) / (1000 * 60 * 60 * 24);
+                    if (diffDays >= 2) {
+                        // Show Date + Time if >= 2 days
+                        syncDisplay = syncDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + 
+                                      ' · ' + 
+                                      syncDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                    } else {
+                        // Show just Time if < 2 days
+                        syncDisplay = syncDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                    }
+                }
+            }
+            document.getElementById('last-sync').textContent = syncDisplay;
+            // ---------------------------
 
             const list = document.getElementById('exam-list');
             list.innerHTML = '';
